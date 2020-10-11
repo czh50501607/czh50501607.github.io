@@ -22,3 +22,22 @@
 自定义脚手架 czh-cli: `npm install czh-cli -g` 目前可直接安装
 
 
+#### gulp构建
+
+该项目的实现思路：
+
+首先需要构建资源文件, 将 js,css,html 到构建出的结果目录里，
+而普通的静态资源文件 image , font 在进入生产时打包就可以。开发模式不需要打包
+
+在开发模式运行打包过后打开浏览器， 用到 browser-sync 去打开浏览器，并且具有监听文件的需要，当源代码改变时代码需要更新。
+
+最后做合并处理，压缩缓存目录包中的 html js css
+
+````javascript
+// 这些构建任务 运用来 gulp.series 和 gulp.parallel 合并指令
+const 导出的构建任务就分为三个 = {
+  clear, // 清除
+  build, // 生产
+  develop, // 开发模式
+};
+````
