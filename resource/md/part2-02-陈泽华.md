@@ -109,3 +109,65 @@ module.exports = merge({}, commonConfig, {
 });
 
 ```
+
+__webpack.prod.js__
+```javascript
+
+const path = require('path')
+const { merge } = require('webpack-merge')
+const webpackCommon = require('./webpack.common.js')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin')
+const TerserWebpackPluin = require('terser-webpack-plugin')
+
+module.exports = merge(webpackCommon, {
+  mode: 'production',
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        exclude: '/node_modules',
+        use: [
+          {
+            loader: 'style-loader'
+          },
+          MiniCssExtractPlugin.loader,
+          {
+            loader: 'css-loader'
+          }
+        ]
+      }
+    ]
+  },
+  plugins: [
+    new CleanWebpackPlugin(),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: path.resolve(__dirname, 'public/'),
+          to: './'
+        }
+      ]
+    }),
+    new MiniCssExtractPlugin({
+      filename: '[name]-[hash:8].bundle.css'
+    })
+  ],
+  optimization: {
+    usedExports: true,
+    minimize: true,
+    // 合并每一个模块到函数中
+    concatenateModules: true,
+    splitChunks: {
+      chunks: 'all'
+    },
+    minimizer: [
+      new TerserWebpackPluin(),
+      new OptimizeCssAssetsWebpackPlugin()
+    ]
+  }
+})
+
+```
