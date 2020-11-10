@@ -36,7 +36,7 @@ __webpack.common.js__
 ``` javascript
 
 const path = require('path');
-const { HotModuleReplacementPlugin, DefinePlugin } = require('webpack');
+const { DefinePlugin } = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
@@ -54,14 +54,17 @@ module.exports = {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
         use: {
           loader: 'url-loader',
-          options: { 
+          options: {
             limit: 10 * 1024,
+            // esModule: 生成文件加载器的方式,默认以 esmodule对象导入，但会导致 src="[object Module]" 导入的对象被 toString掉，所以设置为false
             esModule: false
           }, // 10 kb,超出就调用  file-loader
         },
       },
       {
         test: /\.js$/,
+        // 必须设置exclude，不然js文件都会被编译。
+        // 否则导致某些关键字 编译失效 例如 import export module
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
@@ -101,7 +104,7 @@ __webpack.dev.js__
 ```javascript
 const { merge } = require('webpack-merge');
 const commonConfig = require('./webpack.common');
-
+const { HotModuleReplacementPlugin } = require('webpack');
 module.exports = merge({}, commonConfig, {
   mode: 'development',
   devServer: {
@@ -142,6 +145,7 @@ module.exports = merge({}, commonConfig, {
     ],
   },
   plugins: [
+    new HotModuleReplacementPlugin(),
     new CleanWebpackPlugin(),
     new CopyWebpackPlugin({
       patterns: [
