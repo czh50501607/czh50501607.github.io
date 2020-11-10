@@ -34,6 +34,7 @@ class MyPlugin{
 
 __webpack.common.js__
 ``` javascript
+
 const path = require('path');
 const { HotModuleReplacementPlugin, DefinePlugin } = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -53,22 +54,22 @@ module.exports = {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
         use: {
           loader: 'url-loader',
-          options: { limit: 10 * 1024 }, // 10 kb,超出就调用  file-loader
+          options: { 
+            limit: 10 * 1024,
+            esModule: false
+          }, // 10 kb,超出就调用  file-loader
         },
       },
       {
         test: /\.js$/,
-        exclude: '/node_modules',
+        exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
-          options: {
-            presets: [['@babel/preset-env', { modules: false }], ['@vue/babel-preset-app']],
-          },
         },
       },
       {
         test: /\.vue$/,
-        use: ['babel-loader', 'vue-loader'],
+        use: ['vue-loader'],
       },
       {
         test: /\.css$/,
@@ -84,7 +85,6 @@ module.exports = {
     new DefinePlugin({
       BASE_URL: `"/"`,
     }),
-    new HotModuleReplacementPlugin(),
     new HtmlWebpackPlugin({
       template: 'public/index.html',
       title: '6666',
@@ -92,6 +92,8 @@ module.exports = {
     new VueLoaderPlugin(),
   ],
 };
+
+
 ```
 
 __webpack.dev.js__
@@ -112,34 +114,32 @@ module.exports = merge({}, commonConfig, {
 
 __webpack.prod.js__
 ```javascript
+const path = require('path');
+const { merge } = require('webpack-merge');
+const commonConfig = require('./webpack.common');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin');
+const TerserWebpackPluin = require('terser-webpack-plugin');
 
-const path = require('path')
-const { merge } = require('webpack-merge')
-const webpackCommon = require('./webpack.common.js')
-const { CleanWebpackPlugin } = require('clean-webpack-plugin')
-const CopyWebpackPlugin = require('copy-webpack-plugin')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin')
-const TerserWebpackPluin = require('terser-webpack-plugin')
-
-module.exports = merge(webpackCommon, {
+module.exports = merge({}, commonConfig, {
   mode: 'production',
   module: {
     rules: [
       {
         test: /\.css$/,
-        exclude: '/node_modules',
         use: [
           {
-            loader: 'style-loader'
+            loader: 'style-loader',
           },
           MiniCssExtractPlugin.loader,
           {
-            loader: 'css-loader'
-          }
-        ]
-      }
-    ]
+            loader: 'css-loader',
+          },
+        ],
+      },
+    ],
   },
   plugins: [
     new CleanWebpackPlugin(),
@@ -147,13 +147,13 @@ module.exports = merge(webpackCommon, {
       patterns: [
         {
           from: path.resolve(__dirname, 'public/'),
-          to: './'
-        }
-      ]
+          to: './',
+        },
+      ],
     }),
     new MiniCssExtractPlugin({
-      filename: '[name]-[hash:8].bundle.css'
-    })
+      filename: '[name]-[hash:8].bundle.css',
+    }),
   ],
   optimization: {
     usedExports: true,
@@ -161,13 +161,10 @@ module.exports = merge(webpackCommon, {
     // 合并每一个模块到函数中
     concatenateModules: true,
     splitChunks: {
-      chunks: 'all'
+      chunks: 'all',
     },
-    minimizer: [
-      new TerserWebpackPluin(),
-      new OptimizeCssAssetsWebpackPlugin()
-    ]
-  }
-})
+    minimizer: [new TerserWebpackPluin(), new OptimizeCssAssetsWebpackPlugin()],
+  },
+});
 
 ```
