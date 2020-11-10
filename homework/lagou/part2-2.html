@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- <link rel="stylesheet" href="../../resource/style/sspai.css"> -->
+    <link rel="stylesheet" href="../../resource/style/md.min.css">
+    <title>开发脚手架及封装自动化构建工作流</title>
+  </head>
+  <body>
+    <div id="content"></div>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js "></script>
+    <script>
+      function showMarkdown(url) {
+        // 创建XMLHttpRequest对象
+        var xmlhttp;
+        if (window.XMLHttpRequest) {
+          // IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
+          xmlhttp = new XMLHttpRequest();
+        } else {
+          // IE6, IE5 浏览器执行代码
+          xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+
+        // 得到服务器响应后，对得到的Markdown文档进行解析
+        xmlhttp.onreadystatechange = function () {
+          if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+            // 这里调用了marked框架中的marked函数实现Markdown2HTML的解析
+            document.getElementById("content").innerHTML = marked(
+              xmlhttp.responseText
+            );
+          }
+        };
+
+        // 向服务器发送请求，获取你需要的Markdown文档
+        xmlhttp.open("GET", url, true);
+        xmlhttp.send();
+      }
+      showMarkdown("../../resource/md/part2-01-陈泽华.md");
+    </script>
+  </body>
+</html>
