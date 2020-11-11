@@ -128,7 +128,7 @@ const commonConfig = require('./webpack.common');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin');
-const TerserWebpackPluin = require('terser-webpack-plugin');
+const TerserWebpackPluin = require('terser-webpack-plugin'); // @ v4
 
 module.exports = merge({}, commonConfig, {
   mode: 'production',
